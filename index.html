@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<!--
+  Grammar Test B2 Higher — Unit 2
+  Один файл для GitHub Pages: grammar-tests/unit2/index.html
+  Результат уходит в Google Форму (6 полей) скрыто, без перехода на её страницу.
+
+  СТРУКТУРА ФАЙЛА
+    1. Разметка экранов: старт · тест · отправка · сбой · спасибо · «тест уже пройден» ·
+       самопроверка учителя (?selftest=1)
+    2. Весь код — в самом низу файла: сначала CSS, потом JS (один замкнутый блок,
+       из консоли браузера функции недоступны)
+
+  АДРЕСА ДЛЯ УЧИТЕЛЯ
+    ?selftest=1     — проверка отправки в форму
+    ?teacher=reset  — сброс блокировки повторного прохождения на этом устройстве
+-->
+<html lang="en" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<meta name="robots" content="noindex, nofollow">
+<title>Grammar Test B2 Higher — Unit 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  /* Минимум, чтобы при загрузке не мелькали все экраны сразу. */
+  html,body{margin:0;padding:0;background:#eaf8d8}
+  .hidden{display:none !important}
+</style>
+</head>
+<body class="notranslate">
+
+<!-- ============ ЭКРАН 1: СТАРТ ============ -->
+<div id="screen-start" class="start-outer">
+  <div class="start-card">
+    <h1>Grammar Test B2 Higher<br>— Unit 2</h1>
+    <p class="start-sub">Past simple · Past continuous · Past perfect · Past perfect continuous · Present perfect · Gerunds and infinitives · Habits: <i>used to</i> · <i>would</i> · <i>be used to</i></p>
+
+    <div class="facts">
+      <div class="fact"><b>7</b><span>tasks</span></div>
+      <div class="fact"><b>50</b><span>minutes</span></div>
+      <div class="fact"><b>1</b><span>attempt</span></div>
+    </div>
+
+    <div class="rules">
+      <b>Before you start:</b>
+      <ul>
+        <li>You have 50 minutes. The timer keeps running if you reload the page, and your work is sent automatically when time is up.</li>
+        <li>One task per screen. You cannot go back to a task you have left.</li>
+        <li>Spelling is marked strictly. Contractions are accepted (<i>didn’t</i>, <i>hasn’t</i>).</li>
+        <li>Your answers are saved automatically.</li>
+        <li>Stay on this page until you finish. Leaving the page, pasting, copying and translating are recorded.</li>
+        <li id="rule-fs" class="hidden">On a computer the test opens in full screen. Stay in full screen until you finish.</li>
+        <li>You can take the test only once.</li>
+      </ul>
+    </div>
+
+    <div class="field">
+      <label for="in-first">First name</label>
+      <input id="in-first" type="text" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="40">
+    </div>
+    <div class="field">
+      <label for="in-last">Surname</label>
+      <input id="in-last" type="text" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="40">
+    </div>
+    <div class="field">
+      <label for="in-group">Group</label>
+      <input id="in-group" type="text" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="20">
+    </div>
+    <p class="hintline">Your name, group and result are sent to your teacher and used for assessment only.</p>
+    <p id="start-err" class="err-msg hidden">Please fill in your first name, surname and group.</p>
+
+    <button id="btn-start" class="btn btn-wide" type="button">Start the test</button>
+  </div>
+</div>
+
+<!-- ============ ЭКРАН 2: ТЕСТ ============ -->
+<div id="screen-test" class="hidden">
+  <div class="topbar">
+    <div class="topbar-in">
+      <div class="who" id="who"></div>
+      <div class="taskno" id="taskno"></div>
+      <div class="timer" id="timer">50:00</div>
+    </div>
+    <div class="progress"><i id="bar"></i></div>
+  </div>
+
+  <div id="leave-note" class="leave-note hidden">You have left the test page. Please stay on this page until you finish.</div>
+
+  <div class="wrap">
+    <div id="paper"></div>
+    <div class="navbar">
+      <button id="btn-next" class="btn" type="button">Next task →</button>
+      <button id="btn-submit" class="btn hidden" type="button">Submit the test</button>
+    </div>
+  </div>
+</div>
+
+<!-- водяной знак с именем ученика поверх заданий -->
+<div id="watermark" class="watermark hidden" aria-hidden="true"></div>
+
+<!-- ============ ДИАЛОГ ПОДТВЕРЖДЕНИЯ ============ -->
+<div id="ask" class="ask-back hidden">
+  <div class="ask-box">
+    <p id="ask-text"></p>
+    <div class="ask-btns">
+      <button id="ask-no" class="btn btn-ghost" type="button">Stay</button>
+      <button id="ask-yes" class="btn" type="button">Next task</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ЗАСЛОН: ВЫХОД ИЗ ПОЛНОЭКРАННОГО РЕЖИМА (только компьютер) ============ -->
+<div id="ov-fs" class="ov hidden">
+  <div class="ov-box">
+    <h2>Return to full screen</h2>
+    <p>The test continues in full-screen mode. The timer is still running.</p>
+    <button id="btn-fs" class="btn" type="button">Return to full screen</button>
+  </div>
+</div>
+
+<!-- ============ ЗАСЛОН: ВКЛЮЧЁН ПЕРЕВОД СТРАНИЦЫ ============ -->
+<div id="ov-tr" class="ov hidden">
+  <div class="ov-box">
+    <h2>Turn off page translation</h2>
+    <p>The test cannot be shown in translation. Switch the page back to the original (English) to continue. The timer is still running.</p>
+  </div>
+</div>
+
+<!-- ============ ЭКРАН 3: ОТПРАВКА ============ -->
+<div id="screen-sending" class="done-outer hidden">
+  <div class="done-card">
+    <div class="spinner"></div>
+    <h2>Sending your work…</h2>
+    <p>Please do not close this page.</p>
+  </div>
+</div>
+
+<!-- ============ ЭКРАН 4: СБОЙ ОТПРАВКИ ============ -->
+<div id="screen-failed" class="done-outer hidden">
+  <div class="done-card">
+    <div class="tick tick-brown"><svg viewBox="0 0 24 24"><path d="M12 7v6"/><circle cx="12" cy="17" r=".6"/></svg></div>
+    <h2>Your work has not been sent yet</h2>
+    <p>Check your internet connection and press <b>Try again</b>. Your answers are saved on this device.</p>
+    <div class="fail-btns">
+      <button id="btn-retry" class="btn" type="button">Try again</button>
+      <button id="btn-copyans" class="btn btn-ghost" type="button">Copy my answers</button>
+    </div>
+    <p id="copy-ok" class="hintline hidden" style="text-align:center;margin-top:14px">Your answers have been copied. Send them to your teacher.</p>
+  </div>
+</div>
+
+<!-- ============ ЭКРАН 5: СПАСИБО ============ -->
+<div id="screen-done" class="done-outer hidden">
+  <div class="done-card">
+    <div class="tick"><svg viewBox="0 0 24 24"><polyline points="4,12.5 9.5,18 20,6.5"/></svg></div>
+    <h2 id="done-title">Thank you. Your work has been submitted.</h2>
+    <p>You may now close this page.</p>
+  </div>
+</div>
+
+<!-- ============ ЭКРАН 6: ТЕСТ УЖЕ ПРОЙДЕН ============ -->
+<div id="screen-locked" class="done-outer hidden">
+  <div class="done-card">
+    <div class="tick tick-brown"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></div>
+    <h2>You have already taken this test</h2>
+    <p id="locked-who"></p>
+    <p style="margin-top:16px;font-size:14px">If this is a mistake, please speak to your teacher.</p>
+  </div>
+</div>
+
+<!-- ============ ЭКРАН 7: САМОПРОВЕРКА ОТПРАВКИ (только для учителя, ?selftest=1) ============ -->
+<div id="screen-selftest" class="hidden" style="max-width:760px;margin:0 auto;padding:32px 16px 80px">
+  <div class="start-card" style="text-align:left">
+    <div class="badge">Только для учителя</div>
+    <h1 style="font-size:23px;margin-bottom:18px">Самопроверка отправки</h1>
+    <p class="st-lbl">Адрес отправки</p>
+    <div id="st-url" class="st-box"></div>
+    <p class="st-lbl">Поля формы</p>
+    <div id="st-entries" class="st-box" style="line-height:1.9"></div>
+    <button id="st-send" class="btn btn-wide" type="button">Отправить тестовую запись</button>
+    <div id="st-result" style="margin-top:16px;font-size:14.5px;font-weight:700"></div>
+    <p class="st-lbl" style="margin-top:22px">Проверить, что номера полей ведут к нужным вопросам</p>
+    <p style="font-size:13.5px;color:#66705f;margin:0 0 10px">Откройте ссылку ниже. Если слова ПРОВЕРКА-1 … ПРОВЕРКА-6 встали каждое в свой вопрос по порядку, номера полей верные.</p>
+    <a id="st-prefill" href="#" target="_blank" rel="noopener" style="font-size:14px;color:#41762f;font-weight:700;word-break:break-all">Открыть форму с подстановкой</a>
+    <div class="st-help">
+      <b>Если тестовая запись не появилась во вкладке «Ответы» формы, проверьте по порядку:</b><br>
+      1. Форма опубликована и принимает ответы.<br>
+      2. Ни один вопрос не отмечен как обязательный.<br>
+      3. Выключены «Собирать адреса электронной почты» и «Ограничить до 1 ответа».<br>
+      4. Поля 5 (test_errors) и 6 (integrity score) имеют тип «Абзац».<br>
+      5. Вы смотрите вкладку «Ответы» самой формы, а не старую таблицу.
+    </div>
+  </div>
+</div>
+
+<!-- зонд перевода: если браузер переведёт этот текст, тест это заметит -->
+<div id="tr-probe" translate="yes" lang="en" aria-hidden="true">The weather is lovely today and the garden looks beautiful.</div>
+
+<!-- ======================================================================
+     ВЕСЬ КОД СТРАНИЦЫ, ЧАСТЬ 1 — ОФОРМЛЕНИЕ (CSS)
+     Салатовый пастельный фон · белые карточки · акцент заданий #6f4e37 ·
+     зелёные кнопки и прогресс · шрифт Nunito · красного нет
+     ====================================================================== -->
+<style>
+:root{
+  --green-50:#f4fbea; --green-100:#e9f7d9; --green-200:#d9f0c2; --green-300:#bfe39f;
+  --green-600:#5a9a46; --green-700:#41762f;
+  --brown:#6f4e37; --brown-soft:#f7f0e8; --brown-line:#e2d2bd;
+  --ink:#2c3327; --ink-soft:#66705f; --line:#dfe8d4; --white:#ffffff;
+  --shadow:0 10px 30px rgba(84,122,60,.10), 0 2px 6px rgba(84,122,60,.06);
+  --radius:20px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  background:var(--green-100);
+  background-image:
+    radial-gradient(1100px 600px at 10% -10%, #f7fde9 0%, rgba(247,253,233,0) 60%),
+    radial-gradient(900px 500px at 100% 0%, #e2f5cf 0%, rgba(226,245,207,0) 55%),
+    linear-gradient(180deg,#eaf8d8 0%,#f4fbea 45%,#e8f6d6 100%);
+  background-attachment:fixed;
+  color:var(--ink); font-size:16px; line-height:1.6; min-height:100vh;
+}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 80px}
+.hidden{display:none !important}
+#tr-probe{position:absolute;left:-9999px;top:0;width:300px;font-size:12px;opacity:0;pointer-events:none}
+
+/* ---------- START ---------- */
+.start-outer{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px 16px}
+.start-card{background:var(--white);border-radius:26px;box-shadow:var(--shadow);max-width:620px;width:100%;padding:38px 34px 34px;text-align:center;border:1px solid rgba(255,255,255,.7)}
+.badge{display:inline-block;background:var(--green-200);color:var(--green-700);font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding:6px 14px;border-radius:999px;margin-bottom:16px}
+.start-card h1{font-size:28px;line-height:1.25;margin:0 0 10px;font-weight:800;letter-spacing:-.01em}
+.start-sub{color:var(--ink-soft);font-size:14.5px;margin:0 0 24px}
+.facts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.fact{background:var(--green-50);border:1px solid var(--line);border-radius:14px;padding:10px 16px;min-width:100px}
+.fact b{display:block;font-size:19px;font-weight:800;color:var(--green-700)}
+.fact span{font-size:12.5px;color:var(--ink-soft)}
+.rules{text-align:left;background:var(--green-50);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:0 0 22px;font-size:14px;color:var(--ink-soft)}
+.rules b{color:var(--ink)}
+.rules ul{margin:8px 0 0;padding-left:20px}
+.rules li{margin-bottom:5px}
+.field{text-align:left;margin-bottom:14px}
+.field label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+.field input{width:100%;padding:13px 16px;font:inherit;font-size:16px;border:2px solid var(--line);border-radius:14px;background:var(--green-50);transition:border-color .15s,background .15s}
+.field input:focus{outline:none;border-color:var(--green-300);background:#fff}
+.hintline{font-size:12.5px;color:var(--ink-soft);margin:-4px 0 18px;text-align:left}
+.err-msg{color:var(--brown);font-size:13.5px;font-weight:700;margin:-8px 0 14px;text-align:left}
+
+/* ---------- BUTTONS ---------- */
+.btn{display:inline-block;border:none;cursor:pointer;font:inherit;font-weight:800;background:linear-gradient(180deg,#6cb054,#548f3f);color:#fff;padding:15px 34px;border-radius:16px;font-size:17px;min-height:48px;box-shadow:0 6px 16px rgba(84,143,63,.32);transition:transform .12s,box-shadow .12s,filter .12s}
+.btn:hover{filter:brightness(1.05);box-shadow:0 8px 20px rgba(84,143,63,.38)}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.55;cursor:not-allowed;filter:grayscale(.3)}
+.btn-wide{width:100%}
+.btn-ghost{background:#fff;color:var(--green-700);border:2px solid var(--line);box-shadow:0 2px 8px rgba(84,122,60,.08)}
+.btn-ghost:hover{border-color:var(--green-300);filter:none}
+
+/* ---------- TOP BAR ---------- */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(244,251,234,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.who{font-weight:800;font-size:15px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.taskno{flex:none;font-weight:800;font-size:13.5px;color:var(--brown);background:var(--brown-soft);border-radius:10px;padding:5px 11px;white-space:nowrap}
+.timer{flex:none;font-weight:800;font-variant-numeric:tabular-nums;font-size:17px;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:6px 13px;color:var(--green-700)}
+.timer.warn{color:#b07012;border-color:#f0d49a;background:#fff8e8}
+.timer.danger{color:var(--brown);border-color:#d8c3a8;background:var(--brown-soft);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.progress{height:5px;background:var(--green-200)}
+.progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8cc86a,#548f3f);transition:width .3s}
+.leave-note{max-width:828px;margin:14px auto 0;background:var(--brown-soft);border:1.5px solid var(--brown);color:var(--brown);font-weight:700;font-size:14px;border-radius:14px;padding:10px 16px;text-align:center}
+
+/* ---------- TASK CARD ---------- */
+.ex{display:none;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px 26px 22px;margin-top:26px;border:1px solid rgba(255,255,255,.8)}
+.ex.active{display:block}
+.ex-h{display:flex;align-items:flex-start;gap:12px;margin:0 0 4px}
+.ex-n{flex:none;width:32px;height:32px;border-radius:10px;background:var(--brown);color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center}
+.ex-t{font-weight:800;font-size:16.5px;color:var(--brown);line-height:1.4;padding-top:3px}
+.ex-note{font-size:13.5px;color:var(--ink-soft);font-style:italic;margin:8px 0 0;padding-left:44px}
+.items{margin-top:16px}
+.item{display:flex;gap:12px;padding:11px 0;border-top:1px solid #eef4e6;line-height:1.95}
+.item:first-child{border-top:none}
+.item-n{flex:none;width:24px;font-weight:800;color:var(--green-700);text-align:right}
+.item-b{flex:1;min-width:0}
+.cue{font-weight:700;color:var(--brown);white-space:nowrap}
+
+/* typed gaps */
+.gap{font:inherit;font-size:15.5px;font-weight:700;color:var(--green-700);border:none;border-bottom:2px dashed #b9cfa5;background:transparent;padding:1px 6px 2px;min-width:120px;width:190px;text-align:center;border-radius:0;transition:border-color .15s,background .15s}
+.gap::placeholder{color:#c3d3b4;font-weight:400}
+.gap:focus{outline:none;border-bottom:2px solid var(--green-600);background:var(--green-50);border-radius:6px 6px 0 0}
+.gap.filled{border-bottom-style:solid;border-bottom-color:var(--green-300)}
+.gap-xl{width:300px}
+
+/* Task 2 — three options */
+.opts{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 2px}
+.opt{font:inherit;font-size:15px;font-weight:700;cursor:pointer;border:2px solid var(--line);background:var(--green-50);color:var(--ink);padding:8px 16px;min-height:44px;border-radius:999px;transition:all .14s}
+.opt:hover{border-color:var(--green-300)}
+.opt.sel{background:linear-gradient(180deg,#7cbc60,#548f3f);border-color:#4d8339;color:#fff;box-shadow:0 3px 10px rgba(84,143,63,.3)}
+.blank{display:inline-block;min-width:70px;border-bottom:2px dashed #b9cfa5;margin:0 4px;vertical-align:baseline}
+
+/* Task 3 — transformations */
+.tr1{margin-bottom:2px}
+.trkey{font-weight:800;color:var(--brown);letter-spacing:.08em;margin:2px 0}
+.tr2{line-height:2.1}
+.wc{display:inline-block;font-size:12px;color:var(--ink-soft);margin-left:8px;font-weight:700;white-space:nowrap}
+.wc.bad{color:var(--brown)}
+.example{color:#8b9683;font-style:italic}
+.example .trkey{color:#9aa892}
+
+/* Task 4 — text and rows */
+.textbox{background:var(--brown-soft);border:1.5px solid var(--brown);border-radius:16px;padding:18px 20px;margin:16px 0 18px;line-height:1.95;font-size:15.5px}
+.textbox h4{margin:0 0 10px;color:var(--brown);font-weight:800;font-size:16px}
+.fixrows{display:grid;grid-template-columns:1fr;gap:10px}
+.fixrow{display:flex;align-items:center;gap:8px}
+.fixrow input{flex:1;min-width:0;font:inherit;font-size:15px;font-weight:700;color:var(--green-700);border:2px solid var(--line);border-radius:12px;padding:9px 12px;min-height:44px;background:var(--green-50)}
+.fixrow input:focus{outline:none;border-color:var(--green-300);background:#fff}
+.arrow{flex:none;color:var(--brown);font-weight:800;font-size:17px}
+
+/* Task 7 — phrase box and gaps */
+.wordbox{border:1.5px solid var(--brown);border-radius:16px;padding:14px 16px;margin:16px 0 14px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;background:#fff}
+.chip{font:inherit;font-size:14.5px;font-weight:700;color:var(--brown);background:var(--brown-soft);border:1px solid var(--brown-line);border-radius:999px;padding:7px 14px;min-height:40px;cursor:pointer;transition:all .14s}
+.chip:hover{background:var(--brown);color:#fff}
+.chip.used{opacity:.38;text-decoration:line-through;cursor:default}
+.chip.used:hover{background:var(--brown-soft);color:var(--brown)}
+.cloze{line-height:2.5}
+.g7{font:inherit;font-size:15px;font-weight:700;cursor:pointer;color:var(--green-700);background:#fff;border:2px dashed #b9cfa5;border-radius:10px;padding:2px 10px;min-height:36px;min-width:120px;vertical-align:middle;margin:2px 0}
+.g7 .gn{color:var(--brown);margin-right:4px}
+.g7.filled{border-style:solid;border-color:var(--green-300);background:var(--green-50)}
+.g7.active{border-style:solid;border-color:var(--green-600);box-shadow:0 0 0 3px rgba(90,154,70,.18)}
+.hint7{font-size:13px;color:var(--ink-soft);font-style:italic;margin:0;text-align:center}
+
+/* ---------- NAV ---------- */
+.navbar{display:flex;gap:12px;justify-content:center;align-items:center;margin-top:26px;flex-wrap:wrap}
+
+/* ---------- DIALOG AND OVERLAYS ---------- */
+.ask-back,.ov{position:fixed;inset:0;z-index:300;background:rgba(44,51,39,.45);display:flex;align-items:center;justify-content:center;padding:20px}
+.ov{z-index:400;background:rgba(234,248,216,.98)}
+.ask-box,.ov-box{background:#fff;border-radius:22px;box-shadow:0 20px 50px rgba(0,0,0,.25);max-width:460px;width:100%;padding:28px 26px;text-align:center}
+.ask-box p{margin:0 0 22px;font-size:16.5px;font-weight:700;line-height:1.5}
+.ov-box h2{margin:0 0 10px;font-size:22px;color:var(--brown)}
+.ov-box p{margin:0 0 20px;color:var(--ink-soft)}
+.ask-btns,.fail-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.ask-btns .btn{padding:12px 24px;font-size:15.5px}
+.fail-btns{margin-top:22px}
+
+/* ---------- WATERMARK ---------- */
+.watermark{position:fixed;inset:0;z-index:40;pointer-events:none;background-repeat:repeat}
+
+/* ---------- NO SELECTION ON THE TEST SCREEN ---------- */
+#screen-test{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-touch-callout:none}
+#screen-test input{-webkit-user-select:text;-moz-user-select:text;user-select:text;-webkit-touch-callout:default}
+
+/* ---------- FINAL SCREENS ---------- */
+.done-outer{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px 16px}
+.done-card{background:var(--white);border-radius:26px;box-shadow:var(--shadow);max-width:560px;width:100%;padding:44px 34px;text-align:center}
+.tick{width:82px;height:82px;border-radius:50%;margin:0 auto 22px;background:linear-gradient(180deg,#8cc86a,#548f3f);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(84,143,63,.32);animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+.tick-brown{background:linear-gradient(180deg,#a98467,#6f4e37);box-shadow:0 10px 24px rgba(111,78,55,.3)}
+@keyframes pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+.tick svg{width:42px;height:42px;stroke:#fff;stroke-width:3.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.done-card h2{font-size:24px;margin:0 0 10px;font-weight:800}
+.done-card p{color:var(--ink-soft);font-size:15.5px;margin:0 0 6px}
+.spinner{width:56px;height:56px;margin:0 auto 22px;border-radius:50%;border:6px solid var(--green-200);border-top-color:var(--green-600);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- SELFTEST ---------- */
+.st-lbl{font-size:14px;margin:0 0 6px;font-weight:700}
+.st-box{font:13px/1.5 monospace;background:#f4fbea;border:1px solid #dfe8d4;border-radius:12px;padding:10px 12px;word-break:break-all;margin-bottom:16px}
+.st-help{margin-top:26px;padding-top:18px;border-top:1px solid #eef4e6;font-size:13.5px;color:#66705f;line-height:1.7}
+
+/* ---------- PHONE ---------- */
+@media (max-width:640px){
+  body{font-size:15.5px}
+  .wrap{padding:0 12px 60px}
+  .ex{padding:20px 16px 18px;border-radius:16px}
+  .start-card{padding:28px 20px}
+  .start-card h1{font-size:23px}
+  .topbar-in{gap:8px;padding:9px 12px}
+  .who{font-size:14px}
+  .taskno{font-size:12.5px;padding:4px 8px}
+  .timer{font-size:15.5px;padding:5px 9px}
+  .ex-note{padding-left:0}
+  .gap,.gap-xl{width:auto;min-width:130px;max-width:100%;display:inline-block;margin:2px 0;text-align:left;vertical-align:middle;border:2px solid var(--line);border-radius:10px;padding:5px 10px;min-height:40px;background:var(--green-50)}
+  .gap-xl{min-width:200px}
+  .gap:focus{border:2px solid var(--green-600);border-radius:10px}
+  .gap.filled{border-color:var(--green-300)}
+  .item{line-height:1.75}
+  .opt{flex:1 1 100%;text-align:left}
+  .fixrow{flex-wrap:wrap;background:#fbfdf8;border:1px solid #eef4e6;border-radius:12px;padding:8px}
+  .fixrow input{flex:1 1 100%}
+  .arrow{transform:rotate(90deg);margin:0 auto;line-height:1}
+  .textbox{padding:14px 14px}
+  .cloze{line-height:2.3}
+}
+
+/* ---------- TOUCH SCREENS (tablets too): boxed gaps, 40 px tall ---------- */
+@media (pointer:coarse){
+  .gap{border:2px solid var(--line);border-radius:10px;padding:5px 10px;min-height:40px;background:var(--green-50);vertical-align:middle;margin:2px 0}
+  .gap:focus{border:2px solid var(--green-600);border-radius:10px}
+  .gap.filled{border-color:var(--green-300)}
+}
+
+/* ---------- PRINT IS DISABLED ---------- */
+@media print{
+  body>*{display:none !important}
+  body{background:#fff !important}
+  body::before{content:"Printing is disabled for this test.";display:block;padding:40px;font:700 20px sans-serif;color:#000}
+}
+</style>
+
+<!-- ======================================================================
+     ВЕСЬ КОД СТРАНИЦЫ, ЧАСТЬ 2 — ЛОГИКА (JavaScript)
+     Один замкнутый блок: ни одна функция не видна из консоли браузера.
+     Разделы: настройки формы · задания · хеш-ключ · проверка · состояние и
+     автосохранение · построение экранов · навигация · таймер · журнал честности ·
+     защита · отчёт · отправка · запуск
+     ====================================================================== -->
+<script>
+(function(){
+'use strict';
+
+/* ==========================================================================
+   1. НАСТРОЙКИ GOOGLE ФОРМЫ — 6 полей, строго в этом порядке
+   ========================================================================== */
+var FORM_ID  = '1FAIpQLSdqpD3sKjRSRcS-JD5OqM9ojgsT_SZbNullLwNiLkhVgd2UBw';
+var FORM_URL = 'https://docs.google.com/forms/d/e/' + FORM_ID + '/formResponse';
+var ENTRY = {
+  name:      'entry.1680446624',   // 1 name
+  surname:   'entry.1411740369',   // 2 surname
+  group:     'entry.1988815274',   // 3 group
+  score:     'entry.1785287543',   // 4 test_score
+  errors:    'entry.327569631',    // 5 test_errors       (Абзац)
+  integrity: 'entry.401623680'     // 6 integrity score   (Абзац)
+};
+
+var TEST_NAME  = 'Grammar Test B2 Higher — Unit 2';
+var TIME_LIMIT = 50 * 60;          // секунды, строго 50 минут
+var TOTAL      = 50;
+var MARKS      = {1:6, 2:6, 3:6, 4:8, 5:7, 6:7, 7:10};
+var LS_PROG    = 'gt_u2_b2h_prog';
+var LS_DONE    = 'gt_u2_b2h_done';
+var IDLE_LIMIT = 120;              // простой без действий, секунд
+var FIELD_CAP  = 8000;             // предел длины одного поля формы
+
+/* ==========================================================================
+   2. ЗАДАНИЯ — дословно как в бумажном тесте (Variant 1)
+   ========================================================================== */
+var EX1 = { n:1, title:'Complete the sentences with the correct form of the verb given.', items:[
+  {t:'The factory {} at six every evening when I was a trainee.', cue:'close'},
+  {t:'This time last night I {} the new rota with my team leader.', cue:'discuss'},
+  {t:'The lights went out at the very moment the manager {} the overtime rules.', cue:'explain'},
+  {t:'I {} a word of his speech about teamwork.', cue:'not believe'},
+  {t:'The fire alarm went off just as we {} a staff meeting about the new rota.', cue:'have'},
+  {t:'All through my first year, the extra training {} very little to me.', cue:'matter'}
+]};
+
+var EX2 = { n:2, title:'Choose the correct alternative.', items:[
+  {t:'The night shift {} at ten and the whole building went quiet.', o:['was beginning','has begun','began']},
+  {t:'At two o’clock yesterday afternoon I {} the overtime sheets in the back office.', o:['was counting','have counted','had counted']},
+  {t:'I {} the point of the extra training until my second year.', o:['was not seeing','did not see','have not seen']},
+  {t:'I {} this uniform since my first week here.', o:['am wearing','have been wearing','wear']},
+  {t:'By the time the inspectors arrived, the manager {} to complaints for over an hour.', o:['has answered','answered','had been answering']},
+  {t:'The company {} its first female director in 2019, and she is still in charge.', o:['appointed','has appointed','had appointed']}
+]};
+
+var EX3 = { n:3, title:'Complete the second sentence using the word given.',
+  note:'Write between two and five words, including the word given. Do not change the word given; a contraction counts as one word.',
+  example:{a:'He said sorry because he forgot the meeting.', key:'FORGETTING', b:'He apologised for forgetting the meeting.'},
+  items:[
+  {a:'The shift was over by the time the inspectors arrived.', key:'ALREADY', b:'The shift {} by the time the inspectors arrived.'},
+  {a:'Our old manager had a habit of bringing biscuits for the whole team.', key:'WOULD', b:'Every Friday our old manager {} biscuits for the whole team.'},
+  {a:'I did not have the time to phone every customer back.', key:'ENOUGH', b:'I did not have {} every customer back.'},
+  {a:'The last time our employer raised our pay was in 2019.', key:'SINCE', b:'Our employer {} our pay since 2019.'},
+  {a:'I hated queuing for the bus in those days.', key:'USE', b:'I {} for the bus at all in those days.'},
+  {a:'Our first team leader questioned our breaks so often that it became annoying.', key:'ALWAYS', b:'Our first team leader {} our breaks.'}
+]};
+
+var EX4 = { n:4, title:'Find and correct the eight mistakes with verb tenses in the text.',
+  note:'Copy each mistake as it is in the text and write the correction next to it. The order of the rows does not matter.',
+  textTitle:'My first year at the call centre: what went wrong?',
+  text:'I have started my first job at a busy call centre last September, and I was very excited about it. By the time I finished my training, most of the other new staff already left for better-paid work. I didn’t mind doing shift work at first, because I was earning more than the minimum wage. However, after a few weeks I realised that my team leader had been hope for a promotion for eleven years. Several complaints about the long hours has reached the head office, but nothing has changed. I was knowing from the start that the job was dull, but I needed the money. My closest colleague never has complained about the overtime, which still impresses the whole team. She has trained new staff since six months and she is always patient with them. I work here for two years now, and I still don’t have a permanent contract. Last month our employer finally introduced flexitime, although nobody had asked for it. I have learnt a lot about teamwork this year, so I am not sorry that I stayed.'
+};
+
+var EX5 = { n:5, title:'Complete the sentences with the gerund or infinitive form of the verb given.', items:[
+  {t:'{} a forklift all night is harder than most people imagine.', cue:'drive'},
+  {t:'She is responsible for {} the weekly rota.', cue:'prepare'},
+  {t:'I don’t mind {} to the same complaints every Monday.', cue:'listen'},
+  {t:'My employer suggested {} my hours until the summer.', cue:'reduce'},
+  {t:'He stayed late {} the new staff with the system.', cue:'help'},
+  {t:'It is difficult {} patient after ten hours on the phone.', cue:'stay'},
+  {t:'The pay was not high enough {} a flat in the city.', cue:'rent'}
+]};
+
+var EX6 = { n:6, title:'Complete the sentences with a suitable past-habit structure and the verb given.',
+  note:'Decide first whether the sentence is about the present or the past, and whether it describes a habit, a state, or something a person is or became accustomed to. Then choose the structure that fits.',
+  items:[
+  {t:'When I was a trainee I {} the night shift.', cue:'fear'},
+  {t:'The night shift felt strange at first, but now I {} during the day.', cue:'sleep'},
+  {t:'After six months I {} at four in the morning.', cue:'get up'},
+  {t:'It took me a year {} in a noisy office.', cue:'concentrate'},
+  {t:'I {} overtime, but now I volunteer for it.', cue:'not / enjoy'},
+  {t:'{} to work in the old days?', cue:'you / cycle'},
+  {t:'Our employer {} the overtime rules only once, in 2019.', cue:'change'}
+]};
+
+var EX7 = { n:7, title:'Complete the text with the phrases in the box. Use each phrase only once. There are four extra phrases.',
+  chips:['being','has been using','was looking','would hate','to do',
+         'had told','used to walking','has earned','was moving','taking',
+         'would walk','to be','had been using','used to hate'],
+  textTitle:'The night shift: Marek’s story',
+  text:'Marek {1} for work at eighteen with no qualifications and very little confidence. His first employer put him on the night shift, which nobody else wanted. At first he {2} home through empty streets at seven in the morning, eat a cold breakfast and go straight to bed. He {3} the silence of the warehouse, although he says he misses it now. Within a year he was used to {4} alone, and the empty building no longer frightened him. One winter morning, while he {5} the last pallet, his team leader offered him a place on a training course. He had never thought about promotion before, because nobody {6} him that it was possible. By then he {7} the same machines for three years. He was nervous about {8} the course, but his colleagues encouraged him. Today Marek is in charge of a small team and he is always ready {9} overtime when the shift is busy. He {10} three promotions since that winter morning, and he has never regretted the night shift. “Nobody chooses nights,” he says, “but they teach you a lot about teamwork.”'
+};
+
+var TASKS = [1,2,3,4,5,6,7];
+var COUNT = {1:6, 2:6, 3:6, 5:7, 6:7, 7:10};
+
+/* ==========================================================================
+   3. КЛЮЧ — только хеши (SHA-256 от «соль | номер пункта | ответ»).
+      Правильных ответов в файле нет ни в каком виде: страница умеет сказать
+      «верно / неверно», но не знает, какой ответ правильный.
+      Генератор: build.py (тот же алгоритм нормализации, проверка в обе стороны).
+   ========================================================================== */
+var KEY = {"1.1":["40d131dfa70d18637589","9755de3d1d5246e963ff","aa340db967d137f7d3d1"],"1.2":["e9dd27608c926a52d258"],"1.3":["deb0a083b41b2a3bb7d8"],"1.4":["3c545c00d08837230f4d","ba65d72080dd8675f911"],"1.5":["eb18a59ca02448c59691"],"1.6":["f998151837b8dbb28da6"],"2.1":["49e4ec036f29bc219e7a"],"2.2":["d3fc194e3059538035ba"],"2.3":["f8089898c8d1c6b20cdb"],"2.4":["02367d4fe533b61128cd"],"2.5":["2b9d0d12894ec195a8ba"],"2.6":["f452843b4436a12a282f"],"3.1":["20cb8c8f00c8383194b7","516143246bbfa3c0a754","c86921f16999a6dfb987"],"3.2":["9d550431cae801e06e90","a4b82f810bbbb301eca5"],"3.3":["628325ead123f2e07a27","78c2609029373a269a8c","7ea30dc8ffe0932b4818"],"3.4":["2a764b586679a8442d6e"],"3.5":["c70a4344e0f0a6756c4f","e76c7cf5412144229209"],"3.6":["743c5e8b3d9869590b66"],"5.1":["a6abae21ca5b0bbd4621","ca0bf056133fac4bd380"],"5.2":["67b548ed47c76b132301"],"5.3":["938dced307520f122529"],"5.4":["dc35b41b04c8d1075f80"],"5.5":["20ecf72e8f04813487f4","9bd06a6e8acff2016783"],"5.6":["fb360828efca5b280b5a"],"5.7":["5c704ca291bec7e7350d"],"6.1":["e226d81702936633c1cb"],"6.2":["5119305ac473ba5f4aff","e2844f0dd2ce02fdeb5b"],"6.3":["003747c6cc2a351ced67","4e645253afc8291c1bce","bcce362b3d25b4cba3af"],"6.4":["8da6f4a8bf878fc7fd22"],"6.5":["ac76b532bbac41a55d48","d4e329de73a6d3bc29b7"],"6.6":["9867ed2e68f3cc52a9c7"],"6.7":["a9d10a9d9aa4a51e0d18"],"7.1":["344a5ab1c3f13e0f32a7"],"7.2":["33080b821828c9276d7c"],"7.3":["6b767777e71254094c29"],"7.4":["40bb8c7788ef1744bbcf"],"7.5":["765bb336d7de3e4fe413"],"7.6":["9748740435c1e0b0c48e"],"7.7":["1fe9a573d343ae45e873"],"7.8":["210067a464e6754642f6"],"7.9":["01a95bd23407e5f1ac21"],"7.10":["bc1f506069d43bb85b58"],"4":[{"m":["b20c2560c9f28c40b770","c124e186a30bcd2b188a","c365bb0fdfc3e3dff4b2"],"f":["0ce2fb680b062768aab5","1521cd9f78567a15cc86","a29a06664de6e59c5236"]},{"m":["869f759215a12ce1a800","a1159e3204f16e24981f","a7a6b7b5e4636e9f53e1"],"f":["374a621196ba319e52b2","523085f644973f54026a","65e2475e908aaae2d2ef"]},{"m":["0a568ab95db4b23efa4e","17a8abad0687d4b75f3b","34fed027962985d634e5","c77a4798ef90416903d9"],"f":["6fc8989dbbebf650c617","863bec054e24cf696e6c","8fba4c8a8299d57c8ed1","f8d3d7ccc7c2297b5ba6"]},{"m":["01cfe59f38311dc9ab93","1b87727e3b281707f119","6443166d6992947e3603"],"f":["8d3d77d1cbf227d40247","a3c4f11b1eb00572594d","aad77fde9abc88251838"]},{"m":["1362d9e99c4a58d2bc28","1cbd1f07cfb0388a5d38","afaab9be89bfc3af4937"],"f":["604e3d7f17fe8e1524f3","e8f51eb3bc1112645aed","eff22b9e950e71c93905"]},{"m":["18eccac13cf876939c18","2bb8e3836138b22edc46","65246d516d6cc916fdbf","d741b3c5716819b4d0be"],"f":["1f15e70a350f844a1c61","2ce974621daf474c6b28","4adbd1bc7e8c6da224ad","4d2de8a9f94d0320b0d7"]},{"m":["47741eefc0bbedc95f2c","a3e67b7c3b1dc73fbad8","ca799d339654da095bac"],"f":["1c779691795444c8b074","912d3be86d411f6c09e9","ad826d2a92128f9d929f"]},{"m":["16ee8ac08f882a126b3a","be2072ee4d7ffba5938f","d3fd971b48127aa0bcae","ddcc68a3f4d60a8bdfe5"],"f":["04febdb65a60e75a1e7a","25e301e50679687a05b8","26b799a733f84e79f39e","3b31cd7b65acd36127af","4a3da8fc965157b64f84","6a62c73cca7c24eafcd1","93bb175a266adb052625","e96ccf61169aee7eec1b"]}]};
+var SALT = 'gT2#' + 'b2H' + '-u2' + '-n7q';
+
+/* ---------- SHA-256 (синхронный, без внешних библиотек) ---------- */
+var sha256 = (function(){
+  var K = [], H0 = [], isComp = {}, p = 2, n = 0;
+  function frac(x){ return ((x - Math.floor(x)) * 4294967296) | 0; }
+  while(n < 64){
+    if(!isComp[p]){
+      for(var c = p * p; c < 313; c += p) isComp[c] = 1;
+      if(n < 8) H0[n] = frac(Math.pow(p, 1/2));
+      K[n++] = frac(Math.pow(p, 1/3));
+    }
+    p++;
+  }
+  function utf8(s){
+    var out = [], i, c;
+    for(i = 0; i < s.length; i++){
+      c = s.charCodeAt(i);
+      if(c >= 0xD800 && c <= 0xDBFF && i + 1 < s.length){
+        c = 0x10000 + ((c - 0xD800) << 10) + (s.charCodeAt(++i) - 0xDC00);
+      }
+      if(c < 0x80) out.push(c);
+      else if(c < 0x800) out.push(0xC0 | c >> 6, 0x80 | c & 63);
+      else if(c < 0x10000) out.push(0xE0 | c >> 12, 0x80 | c >> 6 & 63, 0x80 | c & 63);
+      else out.push(0xF0 | c >> 18, 0x80 | c >> 12 & 63, 0x80 | c >> 6 & 63, 0x80 | c & 63);
+    }
+    return out;
+  }
+  function rr(v, k){ return (v >>> k) | (v << (32 - k)); }
+  return function(str){
+    var b = utf8(str), l = b.length, w = [], i, j;
+    for(i = 0; i < l; i++) w[i >> 2] |= b[i] << (24 - (i % 4) * 8);
+    w[l >> 2] |= 0x80 << (24 - (l % 4) * 8);
+    var nw = (((l + 8) >> 6) + 1) * 16;
+    for(i = 0; i < nw; i++) w[i] = w[i] | 0;
+    w[nw - 1] = l * 8;
+    var h = H0.slice(0), W = [];
+    for(j = 0; j < nw; j += 16){
+      var a = h[0], bb = h[1], cc = h[2], d = h[3], e = h[4], f = h[5], g = h[6], hh = h[7];
+      for(i = 0; i < 64; i++){
+        if(i < 16) W[i] = w[j + i];
+        else {
+          var x = W[i - 15], y = W[i - 2];
+          W[i] = (W[i - 16] + (rr(x, 7) ^ rr(x, 18) ^ (x >>> 3)) + W[i - 7] + (rr(y, 17) ^ rr(y, 19) ^ (y >>> 10))) | 0;
+        }
+        var t1 = (hh + (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + W[i]) | 0;
+        var t2 = ((rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) + ((a & bb) ^ (a & cc) ^ (bb & cc))) | 0;
+        hh = g; g = f; f = e; e = (d + t1) | 0; d = cc; cc = bb; bb = a; a = (t1 + t2) | 0;
+      }
+      h[0] = (h[0] + a) | 0; h[1] = (h[1] + bb) | 0; h[2] = (h[2] + cc) | 0; h[3] = (h[3] + d) | 0;
+      h[4] = (h[4] + e) | 0; h[5] = (h[5] + f) | 0; h[6] = (h[6] + g) | 0; h[7] = (h[7] + hh) | 0;
+    }
+    var hex = '';
+    for(i = 0; i < 8; i++) hex += ('00000000' + (h[i] >>> 0).toString(16)).slice(-8);
+    return hex;
+  };
+})();
+
+/* ==========================================================================
+   4. НОРМАЛИЗАЦИЯ И ПРОВЕРКА
+   ========================================================================== */
+function norm(s){
+  return String(s == null ? '' : s)
+    .replace(/[‘’ʼ`´′]/g, "'")
+    .replace(/[“”«»]/g, '"')
+    .replace(/[‐-―−]/g, '-')
+    .replace(/[   ]/g, ' ')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/[\s.,;:!?]+$/, '')
+    .trim();
+}
+/* полные и сокращённые формы считаются одинаковыми */
+function expand(s){
+  return s.replace(/\bwon't\b/g, 'will not')
+          .replace(/\bcan't\b/g, 'cannot')
+          .replace(/\b([a-z]+)n't\b/g, '$1 not')
+          .replace(/\bi'm\b/g, 'i am')
+          .replace(/\b([a-z]+)'ve\b/g, '$1 have')
+          .replace(/\b([a-z]+)'re\b/g, '$1 are')
+          .replace(/\b([a-z]+)'ll\b/g, '$1 will');
+}
+function words(s){ var t = norm(s); return t ? t.split(' ').length : 0; }
+function hashOf(id, s){ return sha256(SALT + '|' + id + '|' + expand(norm(s))).slice(0, 20); }
+function isRight(id, s, list){
+  if(!norm(s)) return false;
+  return list.indexOf(hashOf(id, s)) !== -1;
+}
+
+/* ==========================================================================
+   5. ПОМОЩНИКИ
+   ========================================================================== */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function now(){ return Date.now(); }
+function pad(n){ return (n < 10 ? '0' : '') + n; }
+function clock(ms){ var d = new Date(ms); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+function stamp(ms){ var d = new Date(ms); return pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear() + ', ' + clock(ms); }
+function dur(sec){
+  sec = Math.max(0, Math.round(sec));
+  if(sec < 60) return sec + ' с';
+  return Math.floor(sec / 60) + ' мин ' + pad(sec % 60) + ' с';
+}
+function mmss(sec){ sec = Math.max(0, Math.round(sec)); return Math.floor(sec / 60) + ':' + pad(sec % 60); }
+function lsGet(k){ try{ var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; }catch(e){ return null; } }
+function lsSet(k, o){ try{ localStorage.setItem(k, JSON.stringify(o)); }catch(e){} }
+function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+
+var DESKTOP = (function(){
+  try{
+    return (navigator.maxTouchPoints || 0) === 0 &&
+           window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
+           !/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  }catch(e){ return false; }
+})();
+
+function deviceLine(){
+  var ua = navigator.userAgent || '';
+  var os = /iPhone/.test(ua) ? 'iPhone'
+         : (/iPad/.test(ua) || (/Macintosh/.test(ua) && (navigator.maxTouchPoints || 0) > 1)) ? 'iPad'
+         : /Android/.test(ua) ? 'Android' : /Windows/.test(ua) ? 'Windows'
+         : /CrOS/.test(ua) ? 'Chromebook' : /Mac OS X/.test(ua) ? 'Mac' : /Linux/.test(ua) ? 'Linux' : 'другое';
+  var br = /YaBrowser/.test(ua) ? 'Яндекс Браузер' : /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera'
+         : /Firefox|FxiOS/.test(ua) ? 'Firefox' : /CriOS|Chrome/.test(ua) ? 'Chrome' : /Safari/.test(ua) ? 'Safari' : 'другой';
+  var sc = '';
+  try{ sc = screen.width + '×' + screen.height; }catch(e){}
+  return os + ' · ' + br + ' · ' + sc + ' · ' + (DESKTOP ? 'компьютер' : 'сенсорный экран');
+}
+function newAttemptId(){
+  var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s = '';
+  for(var i = 0; i < 5; i++) s += a.charAt(Math.floor(Math.random() * a.length));
+  return s;
+}
+function shuffled(n){
+  var a = [], i, j, t;
+  for(i = 0; i < n; i++) a.push(i);
+  for(i = n - 1; i > 0; i--){ j = Math.floor(Math.random() * (i + 1)); t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+
+/* ==========================================================================
+   6. СОСТОЯНИЕ И АВТОСОХРАНЕНИЕ
+      Всё, что сделал ученик, и весь журнал честности. Хранится в localStorage
+      с контрольной суммой: ручная правка сохранённых данных попадает в отчёт.
+   ========================================================================== */
+var S = null;            // состояние попытки
+var TEST_ON = false;     // идёт тест (защита включена)
+var SENDING = false;
+
+function freshState(first, last, group){
+  var o = {};
+  for(var k = 0; k < EX2.items.length; k++) o['2.' + (k + 1)] = shuffled(3);
+  return {
+    v:2, first:first, last:last, group:group,
+    attempt:newAttemptId(), device:deviceLine(),
+    startedAt:now(), lastSeen:now(), page:0,
+    a:{}, ch:{}, opt:o, c7:{}, r4:[['',''],['',''],['',''],['',''],['',''],['',''],['',''],['','']],
+    tt:{1:0,2:0,3:0,4:0,5:0,6:0,7:0},
+    log:{leave:[], paste:[], copy:[], reload:[], idle:[], bulk:[], tr:[], print:[], code:[], fs:[], win:[], tamper:[]},
+    fsAvail:null, startSent:false, pending:null, auto:false
+  };
+}
+function sigOf(o){
+  var c = {}; for(var k in o){ if(k !== 'sig') c[k] = o[k]; }
+  return sha256('sig|' + SALT + '|' + JSON.stringify(c)).slice(0, 16);
+}
+function save(){
+  if(!S) return;
+  S.lastSeen = now();
+  S.sig = sigOf(S);
+  lsSet(LS_PROG, S);
+}
+function curTask(){ return TASKS[S ? S.page : 0]; }
+function push(list, entry){ if(list.length < 200) list.push(entry); }
+
+/* ==========================================================================
+   7. ПОСТРОЕНИЕ ЭКРАНОВ ЗАДАНИЙ
+   ========================================================================== */
+var INPUT_ATTR = 'type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="next"';
+
+function head(ex){
+  var h = '<div class="ex-h"><div class="ex-n">' + ex.n + '</div><div class="ex-t">' + esc(ex.title) + '</div></div>';
+  if(ex.note) h += '<p class="ex-note">' + esc(ex.note) + '</p>';
+  return h;
+}
+function gapIn(id, cls){
+  return '<input class="gap' + (cls ? ' ' + cls : '') + '" ' + INPUT_ATTR + ' data-id="' + id + '" aria-label="Answer ' + id + '">';
+}
+function sentence(tpl, mid){
+  var p = tpl.split('{}');
+  return esc(p[0]) + mid + esc(p[1] || '');
+}
+function buildVerb(ex){
+  var h = '<section class="ex" id="ex' + ex.n + '">' + head(ex) + '<div class="items">';
+  for(var i = 0; i < ex.items.length; i++){
+    var it = ex.items[i], id = ex.n + '.' + (i + 1);
+    h += '<div class="item"><div class="item-n">' + (i + 1) + '</div><div class="item-b">'
+       + sentence(it.t, gapIn(id)) + ' <span class="cue">(' + esc(it.cue) + ')</span></div></div>';
+  }
+  return h + '</div></section>';
+}
+function buildEx2(){
+  var h = '<section class="ex" id="ex2">' + head(EX2) + '<div class="items">';
+  for(var i = 0; i < EX2.items.length; i++){
+    var it = EX2.items[i], id = '2.' + (i + 1), ord = S.opt[id], o = '<div class="opts">';
+    for(var q = 0; q < 3; q++){
+      o += '<button type="button" class="opt" data-id="' + id + '" data-o="' + ord[q] + '">' + esc(it.o[ord[q]]) + '</button>';
+    }
+    o += '</div>';
+    h += '<div class="item"><div class="item-n">' + (i + 1) + '</div><div class="item-b">'
+       + sentence(it.t, '<span class="blank"></span>') + o + '</div></div>';
+  }
+  return h + '</div></section>';
+}
+function buildEx3(){
+  var h = '<section class="ex" id="ex3">' + head(EX3) + '<div class="items">';
+  var e = EX3.example;
+  h += '<div class="item example"><div class="item-n" style="color:#9aa892">0</div><div class="item-b">'
+     + '<div class="tr1">' + esc(e.a) + '</div><div class="trkey">' + esc(e.key) + '</div><div>' + esc(e.b) + '</div></div></div>';
+  for(var i = 0; i < EX3.items.length; i++){
+    var it = EX3.items[i], id = '3.' + (i + 1);
+    h += '<div class="item"><div class="item-n">' + (i + 1) + '</div><div class="item-b">'
+       + '<div class="tr1">' + esc(it.a) + '</div><div class="trkey">' + esc(it.key) + '</div>'
+       + '<div class="tr2">' + sentence(it.b, gapIn(id, 'gap-xl')) + '<span class="wc" id="wc' + (i + 1) + '"></span></div>'
+       + '</div></div>';
+  }
+  return h + '</div></section>';
+}
+function buildEx4(){
+  var h = '<section class="ex" id="ex4">' + head(EX4);
+  h += '<div class="textbox"><h4>' + esc(EX4.textTitle) + '</h4>' + esc(EX4.text) + '</div><div class="fixrows">';
+  for(var r = 0; r < 8; r++){
+    h += '<div class="fixrow"><div class="item-n">' + (r + 1) + '</div>'
+       + '<input ' + INPUT_ATTR + ' data-r="' + r + '" data-p="0" placeholder="mistake" aria-label="Row ' + (r + 1) + ' mistake">'
+       + '<span class="arrow">→</span>'
+       + '<input ' + INPUT_ATTR + ' data-r="' + r + '" data-p="1" placeholder="correction" aria-label="Row ' + (r + 1) + ' correction">'
+       + '</div>';
+  }
+  return h + '</div></section>';
+}
+function buildEx7(){
+  var h = '<section class="ex" id="ex7">' + head(EX7) + '<div class="wordbox">';
+  for(var c = 0; c < EX7.chips.length; c++){
+    h += '<button type="button" class="chip" data-c="' + c + '">' + esc(EX7.chips[c]) + '</button>';
+  }
+  h += '</div><p class="hint7">Tap a gap, then tap a phrase. Tap a filled gap to empty it.</p>';
+  var body = EX7.text, out = '';
+  for(var g = 1; g <= 10; g++){
+    var tok = '{' + g + '}', at = body.indexOf(tok);
+    out += esc(body.slice(0, at))
+         + '<button type="button" class="g7" data-g="' + g + '"><span class="gn">(' + g + ')</span><span class="gv">……</span></button>';
+    body = body.slice(at + tok.length);
+  }
+  out += esc(body);
+  h += '<div class="textbox cloze"><h4>' + esc(EX7.textTitle) + '</h4>' + out + '</div>';
+  return h + '</section>';
+}
+function buildPaper(){
+  $('paper').innerHTML = buildVerb(EX1) + buildEx2() + buildEx3() + buildEx4() + buildVerb(EX5) + buildVerb(EX6) + buildEx7();
+  wire();
+  restoreAnswers();
+}
+
+/* ==========================================================================
+   8. ВВОД ОТВЕТОВ
+   ========================================================================== */
+var ACTIVE_GAP = 0;
+
+function wire(){
+  var ins = document.querySelectorAll('#paper input');
+  for(var i = 0; i < ins.length; i++){
+    ins[i].addEventListener('input', onType);
+    ins[i].addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){ e.preventDefault(); focusNext(this); }
+    });
+  }
+  var opts = document.querySelectorAll('#paper .opt');
+  for(var k = 0; k < opts.length; k++) opts[k].addEventListener('click', onOpt);
+  var gaps = document.querySelectorAll('#paper .g7');
+  for(var g = 0; g < gaps.length; g++) gaps[g].addEventListener('click', onGap7);
+  var chips = document.querySelectorAll('#paper .chip');
+  for(var c = 0; c < chips.length; c++) chips[c].addEventListener('click', onChip);
+}
+function focusNext(el){
+  var sec = el.closest('.ex'), list = sec.querySelectorAll('input'), i;
+  for(i = 0; i < list.length; i++){ if(list[i] === el && list[i + 1]){ list[i + 1].focus(); return; } }
+  el.blur();
+}
+function onType(){
+  var el = this, v = el.value, old = el.getAttribute('data-prev') || '';
+  detectBulk(el, old, v);
+  el.setAttribute('data-prev', v);
+  el.classList.toggle('filled', !!v.trim());
+  if(el.hasAttribute('data-r')) S.r4[+el.getAttribute('data-r')][+el.getAttribute('data-p')] = v;
+  else S.a[el.getAttribute('data-id')] = v;
+  var id = el.getAttribute('data-id');
+  if(id && id.indexOf('3.') === 0) wordCounter(id, v);
+  progress();
+  save();
+}
+function wordCounter(id, v){
+  var n = words(v), el = $('wc' + id.split('.')[1]);
+  if(!el) return;
+  el.textContent = n ? n + (n === 1 ? ' word' : ' words') : '';
+  el.classList.toggle('bad', n > 0 && (n < 2 || n > 5));
+}
+function onOpt(){
+  var id = this.getAttribute('data-id'), sib = this.parentNode.querySelectorAll('.opt');
+  for(var i = 0; i < sib.length; i++) sib[i].classList.remove('sel');
+  this.classList.add('sel');
+  S.ch[id] = +this.getAttribute('data-o');
+  progress(); save();
+}
+function setActiveGap(g){
+  ACTIVE_GAP = g;
+  var gaps = document.querySelectorAll('#paper .g7');
+  for(var i = 0; i < gaps.length; i++) gaps[i].classList.toggle('active', +gaps[i].getAttribute('data-g') === g);
+}
+function onGap7(){
+  var g = +this.getAttribute('data-g');
+  if(S.c7['7.' + g] != null){ delete S.c7['7.' + g]; paint7(); progress(); save(); }
+  setActiveGap(g);
+}
+function onChip(){
+  var c = +this.getAttribute('data-c');
+  for(var k in S.c7){ if(S.c7[k] === c) return; }          // фраза уже использована
+  var g = ACTIVE_GAP;
+  if(!g || S.c7['7.' + g] != null){
+    g = 0;
+    for(var i = 1; i <= 10; i++){ if(S.c7['7.' + i] == null){ g = i; break; } }
+    if(!g) return;
+  }
+  S.c7['7.' + g] = c;
+  var next = 0;
+  for(var j = 1; j <= 10; j++){ var q = ((g - 1 + j) % 10) + 1; if(S.c7['7.' + q] == null){ next = q; break; } }
+  paint7(); setActiveGap(next); progress(); save();
+}
+function paint7(){
+  var used = {}, gaps = document.querySelectorAll('#paper .g7'), i;
+  for(i = 0; i < gaps.length; i++){
+    var g = +gaps[i].getAttribute('data-g'), c = S.c7['7.' + g];
+    gaps[i].querySelector('.gv').textContent = c == null ? '……' : EX7.chips[c];
+    gaps[i].classList.toggle('filled', c != null);
+    if(c != null) used[c] = 1;
+  }
+  var chips = document.querySelectorAll('#paper .chip');
+  for(i = 0; i < chips.length; i++) chips[i].classList.toggle('used', !!used[+chips[i].getAttribute('data-c')]);
+}
+function restoreAnswers(){
+  var ins = document.querySelectorAll('#paper input'), i, v;
+  for(i = 0; i < ins.length; i++){
+    var el = ins[i];
+    v = el.hasAttribute('data-r') ? S.r4[+el.getAttribute('data-r')][+el.getAttribute('data-p')] : S.a[el.getAttribute('data-id')];
+    if(v){ el.value = v; el.setAttribute('data-prev', v); el.classList.add('filled'); }
+    var id = el.getAttribute('data-id');
+    if(id && id.indexOf('3.') === 0) wordCounter(id, v || '');
+  }
+  for(var k in S.ch){
+    var b = document.querySelector('#paper .opt[data-id="' + k + '"][data-o="' + S.ch[k] + '"]');
+    if(b) b.classList.add('sel');
+  }
+  paint7();
+}
+
+/* сколько пунктов заполнено (строка задания 4 — когда заполнены оба поля) */
+function filledIn(n){
+  var c = 0, i;
+  if(n === 2){ for(i = 1; i <= 6; i++) if(S.ch['2.' + i] != null) c++; return c; }
+  if(n === 4){ for(i = 0; i < 8; i++) if(S.r4[i][0].trim() && S.r4[i][1].trim()) c++; return c; }
+  if(n === 7){ for(i = 1; i <= 10; i++) if(S.c7['7.' + i] != null) c++; return c; }
+  for(i = 1; i <= COUNT[n]; i++) if((S.a[n + '.' + i] || '').trim()) c++;
+  return c;
+}
+function progress(){
+  var d = 0; for(var k = 0; k < TASKS.length; k++) d += filledIn(TASKS[k]);
+  $('bar').style.width = Math.round(d / TOTAL * 100) + '%';
+}
+
+/* ==========================================================================
+   9. НАВИГАЦИЯ — одно задание на экране, только вперёд
+   ========================================================================== */
+function showPage(n){
+  S.page = n;
+  var secs = document.querySelectorAll('#paper .ex');
+  for(var i = 0; i < secs.length; i++) secs[i].classList.toggle('active', i === n);
+  $('taskno').textContent = 'Task ' + (n + 1) + ' of ' + TASKS.length;
+  var last = n === TASKS.length - 1;
+  $('btn-next').classList.toggle('hidden', last);
+  $('btn-submit').classList.toggle('hidden', !last);
+  ACTIVE_GAP = 0;
+  if(TASKS[n] === 7){
+    for(var g = 1; g <= 10; g++){ if(S.c7['7.' + g] == null){ setActiveGap(g); break; } }
+  }
+  window.scrollTo(0, 0);
+  save();
+}
+var ASK_YES = null;
+function ask(text, yes, fn){
+  $('ask-text').textContent = text; $('ask-yes').textContent = yes; ASK_YES = fn;
+  $('ask').classList.remove('hidden');
+}
+function askClose(){ $('ask').classList.add('hidden'); ASK_YES = null; }
+
+/* ==========================================================================
+   10. ТАЙМЕР — от сохранённого момента старта, перезагрузка его не сбрасывает
+   ========================================================================== */
+var TICK = null, LAST_TICK = 0;
+function remaining(){ return TIME_LIMIT - Math.floor((now() - S.startedAt) / 1000); }
+function tick(){
+  var t = now(), r = remaining(), el = $('timer');
+  if(LAST_TICK && TEST_ON){ S.tt[curTask()] += Math.max(0, (t - LAST_TICK) / 1000); }
+  LAST_TICK = t;
+  el.textContent = mmss(Math.max(0, r));
+  el.classList.toggle('warn', r <= 300 && r > 60);
+  el.classList.toggle('danger', r <= 60);
+  watch(t);
+  if(t - (S.lastSeen || 0) > 4000) save();
+  if(r <= 0){ submit(true); }
+}
+
+/* ==========================================================================
+   11. ЖУРНАЛ ЧЕСТНОСТИ — всё попадает в поле 6 (integrity score)
+   ========================================================================== */
+var AWAY = 0, IDLE_AT = 0, LAST_ACT = now(), WIN_AT = 0, WIN_WH = '', TR_AT = 0, FS_AT = 0, NOTE_T = null;
+var LAST_PASTE = 0, LAST_COPY = 0, LAST_PRINT = 0, LAST_CODE = 0;
+var PROBE_TEXT = '';
+
+function isAway(){
+  if(document.hidden) return true;
+  if(DESKTOP){ try{ return !document.hasFocus(); }catch(e){} }
+  return false;
+}
+function closeIdle(at){
+  if(IDLE_AT){
+    var d = (at - IDLE_AT) / 1000;
+    if(d >= IDLE_LIMIT) push(S.log.idle, {at:IDLE_AT, d:Math.round(d), t:curTask()});
+    IDLE_AT = 0;
+  }
+}
+function activity(){
+  var t = now();
+  if(!TEST_ON) return;
+  closeIdle(t);
+  LAST_ACT = t;
+}
+function watch(t){
+  if(!TEST_ON) return;
+  /* уходы со страницы */
+  var away = isAway();
+  if(away && !AWAY){ AWAY = t; closeIdle(t); }
+  if(!away && AWAY){
+    var d = (t - AWAY) / 1000;
+    if(d >= 2){
+      push(S.log.leave, {at:AWAY, d:Math.round(d), t:curTask()});
+      showLeaveNote();
+      save();
+    }
+    AWAY = 0; LAST_ACT = t;
+  }
+  /* простой больше 2 минут */
+  if(!away && !IDLE_AT && (t - LAST_ACT) / 1000 >= IDLE_LIMIT) IDLE_AT = LAST_ACT;
+  /* перевод страницы */
+  checkTranslate(t);
+  /* уменьшенное окно (только компьютер, вне полноэкранного режима) */
+  if(DESKTOP){
+    var small = false;
+    try{
+      small = !document.fullscreenElement &&
+              (window.innerWidth < screen.availWidth * 0.75 || window.innerHeight < screen.availHeight * 0.6);
+    }catch(e){}
+    if(small && !WIN_AT){ WIN_AT = t; WIN_WH = window.innerWidth + '×' + window.innerHeight; }
+    if(!small && WIN_AT){
+      var wd = (t - WIN_AT) / 1000;
+      if(wd >= 2){ push(S.log.win, {at:WIN_AT, d:Math.round(wd), t:curTask(), wh:WIN_WH}); save(); }
+      WIN_AT = 0;
+    }
+  }
+}
+function showLeaveNote(){
+  var n = $('leave-note');
+  n.classList.remove('hidden');
+  if(NOTE_T) clearTimeout(NOTE_T);
+  NOTE_T = setTimeout(function(){ n.classList.add('hidden'); }, 7000);
+}
+function translated(){
+  try{
+    if(/translated/.test(document.documentElement.className)) return true;
+    var l = document.documentElement.getAttribute('lang');
+    if(l && l.toLowerCase().indexOf('en') !== 0) return true;
+    var p = $('tr-probe');
+    if(p && PROBE_TEXT && p.textContent.replace(/\s+/g, ' ').trim() !== PROBE_TEXT) return true;
+  }catch(e){}
+  return false;
+}
+function checkTranslate(t){
+  var on = translated();
+  if(on && !TR_AT){ TR_AT = t; push(S.log.tr, {at:t, d:0, t:curTask()}); $('ov-tr').classList.remove('hidden'); save(); }
+  if(!on && TR_AT){
+    var last = S.log.tr[S.log.tr.length - 1];
+    if(last) last.d = Math.round((t - TR_AT) / 1000);
+    TR_AT = 0; $('ov-tr').classList.add('hidden'); save();
+  }
+}
+function logEvent(list, gapMs, lastRef){
+  var t = now();
+  if(t - lastRef < gapMs) return lastRef;
+  push(list, {at:t, t:curTask()});
+  save();
+  return t;
+}
+function detectBulk(el, old, v){
+  var p = 0, s = 0;
+  while(p < old.length && p < v.length && old.charAt(p) === v.charAt(p)) p++;
+  while(s < old.length - p && s < v.length - p && old.charAt(old.length - 1 - s) === v.charAt(v.length - 1 - s)) s++;
+  var ins = v.slice(p, v.length - s).trim();
+  if(ins && (/\S\s+\S/.test(ins) || ins.length >= 15)){
+    var id = el.getAttribute('data-id') || ('4, строка ' + (+el.getAttribute('data-r') + 1));
+    push(S.log.bulk, {at:now(), t:curTask(), i:id, x:ins.slice(0, 40)});
+  }
+}
+
+/* ---------- полноэкранный режим (только компьютер) ---------- */
+function fsSupported(){ return DESKTOP && !!document.documentElement.requestFullscreen; }
+function enterFs(){
+  if(!fsSupported()) return;
+  try{
+    var pr = document.documentElement.requestFullscreen();
+    if(pr && pr.then){
+      pr.then(function(){ if(S.fsAvail === null){ S.fsAvail = true; save(); } })
+        .catch(function(){ if(S.fsAvail === null){ S.fsAvail = false; save(); } $('ov-fs').classList.add('hidden'); });
+    }
+  }catch(e){ if(S.fsAvail === null) S.fsAvail = false; }
+}
+document.addEventListener('fullscreenchange', function(){
+  if(!TEST_ON || !S || !S.fsAvail) return;
+  var t = now();
+  if(!document.fullscreenElement){
+    if(!FS_AT){ FS_AT = t; push(S.log.fs, {at:t, d:0, t:curTask()}); save(); }
+    $('ov-fs').classList.remove('hidden');
+  } else {
+    if(FS_AT){
+      var last = S.log.fs[S.log.fs.length - 1];
+      if(last && last.at === FS_AT) last.d = Math.round((t - FS_AT) / 1000);
+      FS_AT = 0; save();
+    }
+    $('ov-fs').classList.add('hidden');
+  }
+});
+$('btn-fs').addEventListener('click', function(){ enterFs(); });
+
+/* ==========================================================================
+   12. ЗАЩИТА: вставка, копирование, печать, код страницы, контекстное меню
+       Ученик не видит никаких сообщений — действие просто не срабатывает.
+   ========================================================================== */
+function onTest(){ return TEST_ON; }
+function blockPaste(e){
+  if(!onTest()) return;
+  e.preventDefault();
+  LAST_PASTE = logEvent(S.log.paste, 700, LAST_PASTE);
+}
+function blockCopy(e){
+  if(!onTest()) return;
+  e.preventDefault();
+  LAST_COPY = logEvent(S.log.copy, 700, LAST_COPY);
+}
+document.addEventListener('paste', blockPaste, true);
+document.addEventListener('drop', blockPaste, true);
+document.addEventListener('beforeinput', function(e){
+  if(!onTest()) return;
+  if(e.inputType === 'insertFromPaste' || e.inputType === 'insertFromDrop' || e.inputType === 'insertFromPasteAsQuotation'){
+    blockPaste(e);
+  }
+}, true);
+document.addEventListener('copy', blockCopy, true);
+document.addEventListener('cut', blockCopy, true);
+document.addEventListener('dragstart', blockCopy, true);
+document.addEventListener('contextmenu', function(e){ if(onTest()) e.preventDefault(); }, true);
+document.addEventListener('selectstart', function(e){
+  if(!onTest()) return;
+  var t = e.target;
+  if(t && t.tagName === 'INPUT') return;
+  e.preventDefault();
+}, true);
+
+document.addEventListener('keydown', function(e){
+  if(!onTest()) return;
+  var k = (e.key || '').toLowerCase(), mod = e.ctrlKey || e.metaKey;
+  if(mod && k === 'p'){ e.preventDefault(); LAST_PRINT = logEvent(S.log.print, 1500, LAST_PRINT); return; }
+  var code = k === 'f12'
+    || (e.ctrlKey && e.shiftKey && (k === 'i' || k === 'j' || k === 'c' || k === 'k'))
+    || (e.metaKey && e.altKey && (k === 'i' || k === 'j' || k === 'c' || k === 'u'))
+    || (mod && (k === 'u' || k === 's'));
+  if(code){ e.preventDefault(); LAST_CODE = logEvent(S.log.code, 700, LAST_CODE); }
+}, true);
+window.addEventListener('beforeprint', function(){
+  if(onTest()) LAST_PRINT = logEvent(S.log.print, 1500, LAST_PRINT);
+});
+
+['keydown','input','pointerdown','touchstart','wheel','scroll'].forEach(function(ev){
+  window.addEventListener(ev, activity, {capture:true, passive:true});
+});
+document.addEventListener('visibilitychange', function(){ if(S && TEST_ON){ watch(now()); if(document.hidden) save(); } });
+window.addEventListener('blur', function(){ if(S && TEST_ON) watch(now()); });
+window.addEventListener('focus', function(){ if(S && TEST_ON) watch(now()); });
+window.addEventListener('pagehide', function(){ if(S && TEST_ON) save(); });
+
+/* водяной знак: имя, фамилия, группа и время старта по всему экрану */
+function paintWatermark(){
+  var txt = (S.first + ' ' + S.last + ' · ' + S.group + ' · ' + clock(S.startedAt))
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="360" height="220">'
+    + '<text x="180" y="120" text-anchor="middle" transform="rotate(-24 180 110)" '
+    + 'font-family="Nunito, Arial, sans-serif" font-size="17" font-weight="700" fill="rgba(111,78,55,0.085)">'
+    + txt + '</text></svg>';
+  var w = $('watermark');
+  w.style.backgroundImage = 'url("data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) + '")';
+  w.classList.remove('hidden');
+}
+
+/* ==========================================================================
+   13. ПРОВЕРКА РАБОТЫ И ОТЧЁТ УЧИТЕЛЮ
+   ========================================================================== */
+function markAll(){
+  var per = {}, lines = {}, id, i, v;
+  function wrong(n, s){ (lines[n] = lines[n] || []).push(s); }
+  function typed(n){
+    var got = 0;
+    for(i = 1; i <= COUNT[n]; i++){
+      id = n + '.' + i; v = S.a[id] || '';
+      if(n === 3 && norm(v) && (words(v) < 2 || words(v) > 5)){
+        wrong(n, ' ' + id + ' «' + v.trim() + '» — неверно (' + words(v) + ' сл.)');
+        continue;
+      }
+      if(isRight(id, v, KEY[id])) got++;
+      else wrong(n, ' ' + id + (norm(v) ? ' «' + v.trim() + '» — неверно' : ' нет ответа'));
+    }
+    return got;
+  }
+  per[1] = typed(1);
+  /* задание 2: выбор из трёх, в отчёте — текст варианта, не буква */
+  per[2] = 0;
+  for(i = 1; i <= 6; i++){
+    id = '2.' + i;
+    if(S.ch[id] == null){ wrong(2, ' ' + id + ' нет ответа'); continue; }
+    v = EX2.items[i - 1].o[S.ch[id]];
+    if(isRight(id, v, KEY[id])) per[2]++; else wrong(2, ' ' + id + ' «' + v + '» — неверно');
+  }
+  per[3] = typed(3);
+  /* задание 4: каждая строка сверяется с ещё не занятыми ошибками текста */
+  per[4] = 0;
+  var used = {}, slots = KEY['4'];
+  for(var r = 0; r < 8; r++){
+    var m = S.r4[r][0] || '', c = S.r4[r][1] || '';
+    if(!norm(m) && !norm(c)) continue;
+    var hit = -1;
+    if(norm(m) && norm(c)){
+      for(var s = 0; s < slots.length; s++){
+        if(used[s]) continue;
+        if(isRight('4.' + (s + 1) + '.m', m, slots[s].m) && isRight('4.' + (s + 1) + '.f', c, slots[s].f)){ hit = s; break; }
+      }
+    }
+    if(hit >= 0){ used[hit] = 1; per[4]++; }
+    else wrong(4, ' строка ' + (r + 1) + ': «' + m.trim() + ' → ' + c.trim() + '» — ' + (norm(m) && norm(c) ? 'неверно' : 'неполная строка'));
+  }
+  var miss = [];
+  for(var q = 0; q < slots.length; q++) if(!used[q]) miss.push('№' + (q + 1));
+  if(miss.length) wrong(4, ' не найдены ошибки по ключу: ' + miss.join(', '));
+  per[5] = typed(5);
+  per[6] = typed(6);
+  /* задание 7: фразы из рамки */
+  per[7] = 0;
+  for(i = 1; i <= 10; i++){
+    id = '7.' + i;
+    if(S.c7[id] == null){ wrong(7, ' ' + id + ' нет ответа'); continue; }
+    v = EX7.chips[S.c7[id]];
+    if(isRight(id, v, KEY[id])) per[7]++; else wrong(7, ' ' + id + ' «' + v + '» — неверно');
+  }
+  var score = 0; for(var k = 1; k <= 7; k++) score += per[k];
+  return {score:score, per:per, lines:lines};
+}
+function gradeFor(sc){ return sc >= 41 ? '5' : sc >= 31 ? '4' : sc >= 21 ? '3' : '2'; }
+function cap(s){ return s.length > FIELD_CAP ? s.slice(0, FIELD_CAP - 20) + '\n…(отчёт обрезан)' : s; }
+
+function errorsField(res){
+  var lost = TOTAL - res.score;
+  if(!lost) return 'ОШИБОК НЕТ — 50 из 50';
+  var out = ['ОШИБКИ: ' + lost + ' из 50'];
+  for(var n = 1; n <= 7; n++){
+    if(res.lines[n] && res.lines[n].length){ out.push('Ex. ' + n); out = out.concat(res.lines[n]); }
+  }
+  return cap(out.join('\n'));
+}
+function listLine(title, list, fmt){
+  if(!list.length) return title + ': 0';
+  var parts = [], i;
+  for(i = 0; i < list.length && i < 40; i++) parts.push(fmt(list[i]));
+  return title + ': ' + list.length + ' — ' + parts.join(' · ') + (list.length > 40 ? ' · … и ещё ' + (list.length - 40) : '');
+}
+function integrityField(sentAt, auto){
+  var L = S.log, T = function(e){ return 'Task ' + e.t; };
+  var mins = Math.min(50, Math.max(0, Math.round((sentAt - S.startedAt) / 60000)));
+  var tt = [];
+  for(var k = 1; k <= 7; k++) tt.push('Task ' + k + ' — ' + mmss(S.tt[k]));
+  var fsLine, winLine;
+  if(!DESKTOP){ fsLine = 'ВЫХОД ИЗ ПОЛНОГО ЭКРАНА: — (сенсорный экран, не отслеживается)'; winLine = 'УМЕНЬШЕННОЕ ОКНО: — (сенсорный экран, не отслеживается)'; }
+  else {
+    fsLine = S.fsAvail ? listLine('ВЫХОД ИЗ ПОЛНОГО ЭКРАНА', L.fs, function(e){ return clock(e.at) + ' (на ' + dur(e.d) + ', ' + T(e) + ')'; })
+                       : 'ВЫХОД ИЗ ПОЛНОГО ЭКРАНА: — (полноэкранный режим недоступен в этом браузере)';
+    winLine = listLine('УМЕНЬШЕННОЕ ОКНО', L.win, function(e){ return clock(e.at) + ' (на ' + dur(e.d) + ', окно ' + e.wh + ', ' + T(e) + ')'; });
+  }
+  var lines = [
+    'ИТОГ: уходы со вкладки — ' + L.leave.length + ' · вставка — ' + L.paste.length + ' · копирование — ' + L.copy.length
+      + ' · перезагрузки — ' + L.reload.length + ' · простои — ' + L.idle.length + ' · ввод кусками — ' + L.bulk.length
+      + ' · перевод — ' + L.tr.length + ' · печать — ' + L.print.length + ' · код страницы — ' + L.code.length
+      + (DESKTOP ? ' · выход из полного экрана — ' + L.fs.length + ' · уменьшенное окно — ' + L.win.length : '')
+      + ' · правка сохранённых данных — ' + (L.tamper.length ? 'ДА' : 'нет'),
+    'ВРЕМЯ: начало ' + stamp(S.startedAt) + ' · сдано ' + clock(sentAt) + ' · ' + mins + ' мин из 50' + (auto ? ' (автоотправка по таймеру)' : ''),
+    'ВРЕМЯ ПО ЗАДАНИЯМ: ' + tt.join(' · '),
+    listLine('УХОДЫ СО ВКЛАДКИ', L.leave, function(e){ return clock(e.at) + ' (на ' + dur(e.d) + ', ' + T(e) + ')'; }),
+    listLine('ПОПЫТКИ ВСТАВКИ', L.paste, function(e){ return clock(e.at) + ' (' + T(e) + ')'; }),
+    listLine('ПОПЫТКИ КОПИРОВАНИЯ', L.copy, function(e){ return clock(e.at) + ' (' + T(e) + ')'; }),
+    listLine('ПЕРЕЗАГРУЗКИ СТРАНИЦЫ', L.reload, function(e){ return clock(e.at) + ' (страница была закрыта ' + dur(e.d) + ', ' + T(e) + ')'; }),
+    listLine('ПРОСТОИ БОЛЕЕ 2 МИН', L.idle, function(e){ return clock(e.at) + ' (' + dur(e.d) + ', ' + T(e) + ')'; }),
+    listLine('ВВОД ЦЕЛЫМ КУСКОМ', L.bulk, function(e){ return clock(e.at) + ' (' + T(e) + ', пункт ' + e.i + ': «' + e.x + '»)'; }),
+    listLine('ПЕРЕВОД СТРАНИЦЫ', L.tr, function(e){ return clock(e.at) + ' (на ' + dur(e.d) + ', ' + T(e) + ')'; }),
+    listLine('ПОПЫТКИ ПЕЧАТИ', L.print, function(e){ return clock(e.at) + ' (' + T(e) + ')'; }),
+    listLine('ПОПЫТКИ ОТКРЫТЬ КОД СТРАНИЦЫ', L.code, function(e){ return clock(e.at) + ' (' + T(e) + ')'; }),
+    fsLine,
+    winLine,
+    'СОХРАНЁННЫЕ ДАННЫЕ: ' + (L.tamper.length ? 'ИЗМЕНЕНЫ ВРУЧНУЮ — ' + L.tamper.map(function(e){ return clock(e.at); }).join(' · ') : 'не изменялись'),
+    'УСТРОЙСТВО: ' + S.device + ' · ID попытки ' + S.attempt
+  ];
+  return cap(lines.join('\n'));
+}
+
+/* ==========================================================================
+   14. ОТПРАВКА В GOOGLE ФОРМУ — скрыто, без перехода на страницу формы
+       Маршрут 1: fetch(mode:'no-cors'). Маршрут 2 при исключении: скрытая
+       форма в скрытый iframe. Ответ Google прочитать нельзя, он и не нужен.
+   ========================================================================== */
+function post(f, cb){
+  var done = false;
+  function fin(ok){ if(done) return; done = true; cb(ok); }
+  var body = new URLSearchParams();
+  body.append(ENTRY.name, f.name);
+  body.append(ENTRY.surname, f.surname);
+  body.append(ENTRY.group, f.group);
+  body.append(ENTRY.score, f.score);
+  body.append(ENTRY.errors, f.errors);
+  body.append(ENTRY.integrity, f.integrity);
+  function viaIframe(){
+    try{
+      var nm = 'gf_' + now(), ifr = document.createElement('iframe');
+      ifr.name = nm; ifr.setAttribute('aria-hidden', 'true');
+      ifr.style.cssText = 'position:absolute;width:0;height:0;border:0;left:-9999px';
+      document.body.appendChild(ifr);
+      var fm = document.createElement('form');
+      fm.action = FORM_URL; fm.method = 'POST'; fm.target = nm; fm.style.display = 'none';
+      fm.setAttribute('accept-charset', 'UTF-8');
+      body.forEach(function(val, key){
+        var inp = document.createElement('input'); inp.type = 'hidden'; inp.name = key; inp.value = val; fm.appendChild(inp);
+      });
+      document.body.appendChild(fm);
+      ifr.onload = function(){ fin(true); };
+      fm.submit();
+      setTimeout(function(){ fin(navigator.onLine !== false); }, 6000);
+    }catch(e){ fin(false); }
+  }
+  try{
+    fetch(FORM_URL, {method:'POST', mode:'no-cors', body:body})
+      .then(function(){ fin(true); })
+      .catch(function(){ if(navigator.onLine === false) fin(false); else viaIframe(); });
+  }catch(e){ viaIframe(); }
+  setTimeout(function(){ fin(navigator.onLine !== false); }, 15000);
+}
+
+/* строка «СТАРТ» в форме при нажатии Start: видно, если тест начинали раньше
+   в другом браузере, в режиме инкогнито или на другом устройстве */
+function sendStart(){
+  if(S.startSent) return;
+  post({
+    name:S.first, surname:S.last, group:S.group,
+    score:'СТАРТ',
+    errors:'—',
+    integrity:'СТАРТ: ' + stamp(S.startedAt) + ' · ' + TEST_NAME + '\nУСТРОЙСТВО: ' + S.device + ' · ID попытки ' + S.attempt
+  }, function(ok){ if(ok){ S.startSent = true; save(); } });
+}
+
+function submit(auto){
+  if(SENDING || !S) return;
+  if(!S.pending){
+    closeIdle(now());
+    if(AWAY){ watch(now()); }
+    var res = markAll(), sentAt = now();
+    var pct = Math.floor(res.score / TOTAL * 100);
+    S.auto = !!auto;
+    S.pending = {
+      name:S.first, surname:S.last, group:S.group,
+      score:res.score + ' / ' + TOTAL + ' (' + pct + '%) — оценка ' + gradeFor(res.score),
+      errors:errorsField(res),
+      integrity:integrityField(sentAt, auto)
+    };
+    save();
+  }
+  TEST_ON = false; SENDING = true;
+  if(TICK){ clearInterval(TICK); TICK = null; }
+  window.onbeforeunload = null;
+  try{ if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); }catch(e){}
+  askClose();
+  ['screen-test','watermark','ov-fs','ov-tr','screen-failed','screen-start'].forEach(function(x){ $(x).classList.add('hidden'); });
+  $('screen-sending').classList.remove('hidden');
+  attemptSend(1);
+}
+function attemptSend(n){
+  post(S.pending, function(ok){
+    if(ok){
+      lsSet(LS_DONE, {first:S.first, last:S.last, group:S.group, at:now()});
+      lsDel(LS_PROG);
+      SENDING = false;
+      $('done-title').textContent = S.auto ? 'Time is up. Your work has been submitted.' : 'Thank you. Your work has been submitted.';
+      $('screen-sending').classList.add('hidden');
+      $('screen-done').classList.remove('hidden');
+    } else if(n < 2){
+      setTimeout(function(){ attemptSend(n + 1); }, 3000);
+    } else {
+      SENDING = false;
+      $('screen-sending').classList.add('hidden');
+      $('screen-failed').classList.remove('hidden');
+    }
+  });
+}
+$('btn-retry').addEventListener('click', function(){
+  $('screen-failed').classList.add('hidden');
+  $('screen-sending').classList.remove('hidden');
+  SENDING = true; attemptSend(2);
+});
+/* «Copy my answers» — только собственные ответы ученика, без балла и ключа */
+$('btn-copyans').addEventListener('click', function(){
+  var out = [TEST_NAME, S.first + ' ' + S.last + ', ' + S.group, 'Start: ' + stamp(S.startedAt), 'ID: ' + S.attempt, ''], i, n;
+  for(n = 1; n <= 7; n++){
+    out.push('Task ' + n);
+    if(n === 2){ for(i = 1; i <= 6; i++) out.push(' 2.' + i + ' ' + (S.ch['2.' + i] != null ? EX2.items[i - 1].o[S.ch['2.' + i]] : '—')); }
+    else if(n === 4){ for(i = 0; i < 8; i++) out.push(' row ' + (i + 1) + ' ' + (S.r4[i][0] || '—') + ' → ' + (S.r4[i][1] || '—')); }
+    else if(n === 7){ for(i = 1; i <= 10; i++) out.push(' 7.' + i + ' ' + (S.c7['7.' + i] != null ? EX7.chips[S.c7['7.' + i]] : '—')); }
+    else { for(i = 1; i <= COUNT[n]; i++) out.push(' ' + n + '.' + i + ' ' + (S.a[n + '.' + i] || '—')); }
+  }
+  var text = out.join('\n'), ok = function(){ $('copy-ok').classList.remove('hidden'); };
+  try{
+    navigator.clipboard.writeText(text).then(ok, function(){ fallbackCopy(text); ok(); });
+  }catch(e){ fallbackCopy(text); ok(); }
+});
+function fallbackCopy(text){
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+}
+
+/* ==========================================================================
+   15. ЗАПУСК
+   ========================================================================== */
+function begin(restored){
+  $('who').textContent = S.first + ' ' + S.last + ' · ' + S.group;
+  $('screen-start').classList.add('hidden');
+  $('screen-test').classList.remove('hidden');
+  buildPaper();
+  progress();
+  TEST_ON = true;
+  LAST_ACT = now(); LAST_TICK = 0;
+  paintWatermark();
+  showPage(S.page || 0);
+  if(!restored) sendStart();
+  else if(!S.startSent) sendStart();
+  if(restored && fsSupported() && S.fsAvail) $('ov-fs').classList.remove('hidden');
+  window.onbeforeunload = function(){ return 'Your test has not been sent yet.'; };
+  tick();
+  if(TEST_ON) TICK = setInterval(tick, 1000);
+}
+
+$('btn-start').addEventListener('click', function(){
+  var f = $('in-first').value.trim(), l = $('in-last').value.trim(), g = $('in-group').value.trim();
+  if(!f || !l || !g){ $('start-err').classList.remove('hidden'); return; }
+  S = freshState(f, l, g);
+  save();
+  enterFs();                  // жест пользователя — браузер разрешит полный экран
+  begin(false);
+});
+['in-first','in-last','in-group'].forEach(function(x){
+  $(x).addEventListener('keydown', function(e){ if(e.key === 'Enter') $('btn-start').click(); });
+});
+$('btn-next').addEventListener('click', function(){
+  var n = TASKS[S.page], blank = (n === 4 ? 8 : (n === 2 ? 6 : COUNT[n])) - filledIn(n);
+  ask('You cannot return to this task. '
+      + (blank ? (blank === 1 ? '1 item is still blank. ' : blank + ' items are still blank. ') : 'All items are answered. ')
+      + 'Go to the next task?', 'Next task', function(){ showPage(S.page + 1); });
+});
+$('btn-submit').addEventListener('click', function(){
+  var d = 0; for(var k = 0; k < TASKS.length; k++) d += filledIn(TASKS[k]);
+  var left = TOTAL - d;
+  ask('You cannot change your answers after this. '
+      + (left ? (left === 1 ? '1 item is still blank. ' : left + ' items are still blank. ') : '')
+      + 'Submit your work?', 'Submit', function(){ submit(false); });
+});
+$('ask-no').addEventListener('click', askClose);
+$('ask-yes').addEventListener('click', function(){ var fn = ASK_YES; askClose(); if(fn) fn(); });
+
+/* ---------- экран самопроверки для учителя: ?selftest=1 ---------- */
+function openSelfTest(){
+  $('screen-start').classList.add('hidden');
+  $('screen-selftest').classList.remove('hidden');
+  $('st-url').textContent = FORM_URL;
+  $('st-entries').innerHTML =
+      ENTRY.name + ' → 1 name<br>' + ENTRY.surname + ' → 2 surname<br>' + ENTRY.group + ' → 3 group<br>'
+    + ENTRY.score + ' → 4 test_score<br>' + ENTRY.errors + ' → 5 test_errors<br>' + ENTRY.integrity + ' → 6 integrity score';
+  var keys = ['name','surname','group','score','errors','integrity'], pre = 'https://docs.google.com/forms/d/e/' + FORM_ID + '/viewform?usp=pp_url';
+  for(var i = 0; i < keys.length; i++) pre += '&' + ENTRY[keys[i]] + '=' + encodeURIComponent('ПРОВЕРКА-' + (i + 1));
+  $('st-prefill').href = pre;
+  $('st-send').addEventListener('click', function(){
+    var b = this; b.disabled = true;
+    $('st-result').style.color = '#66705f'; $('st-result').textContent = 'Отправляем…';
+    post({name:'ПРОВЕРКА', surname:'ОТПРАВКИ', group:'—', score:'0 / 50 — тестовая запись',
+          errors:'Тестовая запись со страницы самопроверки', integrity:'Отправлено ' + stamp(now()) + ' · ' + deviceLine()},
+      function(ok){
+        b.disabled = false;
+        $('st-result').style.color = ok ? '#41762f' : '#6f4e37';
+        $('st-result').textContent = ok ? 'Отправлено. Откройте вкладку «Ответы» формы: там должна появиться строка «ПРОВЕРКА ОТПРАВКИ».'
+                                        : 'Не отправлено: нет соединения с интернетом.';
+      });
+  });
+}
+
+(function init(){
+  try{ PROBE_TEXT = $('tr-probe').textContent.replace(/\s+/g, ' ').trim(); }catch(e){}
+  if(DESKTOP && document.documentElement.requestFullscreen) $('rule-fs').classList.remove('hidden');
+  var q = location.search;
+  if(q.indexOf('selftest=1') !== -1){ openSelfTest(); return; }
+  if(q.indexOf('teacher=reset') !== -1){
+    lsDel(LS_DONE); lsDel(LS_PROG);
+    try{ history.replaceState(null, '', location.pathname); }catch(e){}
+  }
+  var done = lsGet(LS_DONE);
+  if(done){
+    $('screen-start').classList.add('hidden');
+    $('locked-who').textContent = (done.first || '') + ' ' + (done.last || '') + (done.group ? ', ' + done.group : '') + (done.at ? ' — ' + stamp(done.at) : '');
+    $('screen-locked').classList.remove('hidden');
+    return;
+  }
+  var p = lsGet(LS_PROG);
+  if(p && p.v === 2 && p.first && p.startedAt){
+    var ok = p.sig === sigOf(p);
+    S = p;
+    if(!ok) push(S.log.tamper, {at:now()});
+    if(S.pending){ submit(S.auto); return; }
+    var gap = Math.round((now() - (S.lastSeen || now())) / 1000);
+    push(S.log.reload, {at:now(), d:gap, t:TASKS[S.page || 0]});
+    save();
+    begin(true);
+  }
+})();
+
+})();
+</script>
+</body>
+</html>
